@@ -1,115 +1,147 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
+import Head from "next/head";
+import dynamic from "next/dynamic";
+import React, { useState, useCallback, useEffect } from "react";
+import { Plus_Jakarta_Sans } from "next/font/google";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
+  weight: ["800"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const Vision = dynamic(() => import("../components/sections/Vision"));
+const Pricing = dynamic(() => import("../components/sections/Pricing"));
+const AboutUs = dynamic(() => import("../components/sections/AboutUs"));
+const Portfolio = dynamic(() => import("../components/sections/Portfolio"));
+const Impact = dynamic(() => import("../components/Impact/Impact"), {
+  ssr: false,
+});
+const Whatwedo = dynamic(() => import("../components/Whatwedo/Whatwedo"), {
+  ssr: false,
+});
+
+import Layout from "../components/layouts/Layout";
+import Header from "../components/layouts/Header";
+
+import { Fascinate } from "next/font/google";
+import Link from "next/link";
+const fascinate = Fascinate({
   subsets: ["latin"],
+  weight: "400",
+  display: "swap",
+});
+
+const WavyStripe = dynamic(() => import("../components/WavyStripe"), {
+  ssr: false,
+  loading: () => <div className="h-screen w-full bg-[#050607]" />,
 });
 
 export default function Home() {
+  const [activeItem, setActiveItem] = useState("Home");
+  const [mount3D, setMount3D] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const mqSmall = window.matchMedia("(max-width: 768px)");
+
+    // Increased delay for mobile to give text time to render
+    const t = setTimeout(() => setMount3D(true), mqSmall.matches ? 200 : 100);
+
+    return () => clearTimeout(t);
+  }, []);
+
+  const memoizedSetActiveItem = useCallback((item) => {
+    setActiveItem(item);
+  }, []);
+
+  const renderSectionContent = () => {
+    switch (activeItem) {
+      case "Vision":
+        return <Vision />;
+      case "Pricing":
+        return <Pricing />;
+      case "Portfolio":
+        return <Portfolio />;
+      case "About us":
+        return <AboutUs />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20`}
-    >
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/pages/index.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+    <Layout>
+      <Head>
+        <title>Exerra AI</title>
+      </Head>
+
+      <main className="flex flex-col min-h-screen w-full bg-[#050607] overflow-x-hidden overflow-y-hidden">
+        <Header activeItem={activeItem} setActiveItem={memoizedSetActiveItem} />
+
+        {activeItem === "Home" ? (
+          <>
+            <section
+              className="relative flex flex-col items-center justify-between w-full px-4"
+              style={{ minHeight: "calc(100vh - var(--header-height, 4vh))" }}
+            >
+              <div className="relative z-20 text-center w-full pt-16 max-sm:pt-72 md:pt-38">
+                <h1
+                  className={`${fascinate.className} animate-text text-7xl max-sm:text-6xl max-md:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-b from-[#050607] via-[#101010] to-[#202122] drop-shadow-lg text-outline-white`}
+                >
+                  Exerra.AI
+                </h1>
+
+                <p
+                  className={`${plusJakarta.className} text-[#606162] text-md md:text-lg max-w-3xl mx-auto leading-tighter animate-text mt-3`}
+                >
+                  We turn complex ideas into effortless experiences –
+                  <span
+                    className={`${plusJakarta.className} text-[#ffff] text-sm md:text-lg font-semibold max-w-3xl mx-auto leading-relaxed`}
+                  >
+                    unlocking new levels of productivity and insight for your
+                    business.
+                  </span>
+                </p>
+              </div>
+
+              <div className="absolute bottom-0 left-0 w-full h-screen z-10 animate-Wavy">
+                {mount3D ? (
+                  <WavyStripe />
+                ) : (
+                  <div
+                    className="w-full h-full"
+                    style={{
+                      background:
+                        "linear-gradient(180deg, rgba(16,16,16,0.9) 0%, rgba(10,10,10,0.6) 40%, rgba(5,6,7,0.0) 100%)",
+                      maskImage:
+                        "linear-gradient(180deg, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 95%)",
+                      WebkitMaskImage:
+                        "linear-gradient(180deg, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 95%)",
+                    }}
+                  />
+                )}
+              </div>
+            </section>
+
+            <section className="relative z-10 w-full">
+              <Impact />
+            </section>
+
+            <section className="relative z-10 w-full">
+              <Whatwedo activeItem={activeItem} setActiveItem={setActiveItem} />
+            </section>
+
+            <footer className="mt-auto text-center text-[#ffff] font-medium text-xs py-4 mb-2">
+              <p>&copy; 2025 Exerraai. All rights reserved.</p>
+            </footer>
+          </>
+        ) : (
+          <div className="relative z-10 pt-[100px] pb-10 flex-grow">
+            {renderSectionContent()}
+          </div>
+        )}
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    </Layout>
   );
 }
