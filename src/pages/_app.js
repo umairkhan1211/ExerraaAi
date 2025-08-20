@@ -17,7 +17,7 @@ export default function App({ Component, pageProps }) {
         <title>Exerra AI</title>
         <link
           rel="preload"
-          href="/_next/static/chunks/src_components_WavyStripe_e5a9355a.js"
+          href="/_next/static/chunks/src_components_WavyStripe_38d17d1f.js"
           as="script"
         />
         <link

@@ -6,14 +6,14 @@ import { Satisfy } from "next/font/google";
 import { Fascinate } from "next/font/google";
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import Link from "next/link";
-
-
+import { motion } from "framer-motion"; // Import Framer Motion
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  weight: ['800'], // load the 800 weight you need
+  weight: ['800'],
   display: 'swap',
 });
+
 const fascinate = Fascinate({
   subsets: ["latin"],
   weight: "400",
@@ -33,7 +33,41 @@ const socials = [
   { name: "linkedin", link: "https://www.linkedin.com/company/exerra-ai", icon: () => <FaLinkedinIn /> },
 ];
 
-const navItems = ["Home", "Vision", "Pricing","Portfolio" ,"About us"];
+const navItems = ["Home", "Vision", "Pricing", "Portfolio", "About us"];
+
+// Animation variants for the header
+const headerVariants = {
+  hidden: { y: -100, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 80,
+      damping: 15,
+      delay: 0.2,
+    },
+  },
+};
+
+// Animation variants for the list items
+const ulVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.5,
+    },
+  },
+};
+
+const liVariants = {
+  hidden: { y: -20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+  },
+};
 
 function HeaderComponent({ activeItem, setActiveItem }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -43,7 +77,6 @@ function HeaderComponent({ activeItem, setActiveItem }) {
     setIsMobileMenuOpen(false);
   };
 
-  // Function to close the mobile menu
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
   };
@@ -59,15 +92,20 @@ function HeaderComponent({ activeItem, setActiveItem }) {
   }, [isMobileMenuOpen]);
 
   return (
-    <div className="fixed top-0 left-0 w-full z-50 px-2 sm:px-4">
+    <motion.div
+      className="fixed top-0 left-0 w-full z-50 px-2 sm:px-4"
+      initial="hidden"
+      animate="visible"
+      variants={headerVariants}
+    >
       <div className="max-w-[1100px] mx-auto h-[72px] mt-5 mb-3 flex justify-between items-center px-4 rounded-2xl bg-[#0b0c0d]/38 backdrop-blur-lg border border-white/10 shadow-sm shadow-white/5 transition-all duration-300">
         {/* Logo */}
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveItem('Home')}>
-        <Link href='/'> 
-          <span className={`${fascinate.className} font-Satsify text-lg font-bold tracking-wide text-white `}>
-            Exerra AI
-          </span>
-        </Link>
+          <Link href='/'>
+            <span className={`${fascinate.className} font-Satsify text-lg font-bold tracking-wide text-white `}>
+              Exerra AI
+            </span>
+          </Link>
         </div>
 
         {/* Hamburger (Mobile) */}
@@ -83,12 +121,18 @@ function HeaderComponent({ activeItem, setActiveItem }) {
 
         {/* Desktop Nav */}
         <div className="hidden md:flex justify-center items-center">
-          <ul className="flex space-x-2 capitalize">
+          <motion.ul
+            className="flex space-x-2 capitalize"
+            variants={ulVariants}
+            initial="hidden"
+            animate="visible" // Add initial and animate props here
+          >
             {navItems.map((item) => (
-              <li
+              <motion.li
                 key={item}
                 className="px-4 py-3 cursor-pointer font-medium rounded-lg relative overflow-hidden group"
                 onClick={() => handleNavItemClick(item)}
+                variants={liVariants}
               >
                 <span
                   className={`transition-colors duration-200 ${
@@ -106,31 +150,39 @@ function HeaderComponent({ activeItem, setActiveItem }) {
                       : "opacity-0 group-hover:opacity-30"
                   }`}
                 ></span>
-              </li>
+              </motion.li>
             ))}
-          </ul>
+          </motion.ul>
         </div>
 
-        {/* Desktop Socials */}
+        {/* Desktop Socials & Button */}
         <div className="hidden md:flex items-center gap-3">
-          <div className="flex items-center gap-2">
+          <motion.div
+            className="flex items-center gap-2"
+            variants={ulVariants}
+            initial="hidden"
+            animate="visible"
+          >
             {socials.map(({ name, link, icon: Icon }) => (
-              <a
+              <motion.a
                 key={name}
                 href={link}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 text-white hover:text-[#b0b0b0] bg-white/10 hover:bg-white/20 rounded-lg transition"
+                variants={liVariants}
               >
                 <Icon />
-              </a>
+              </motion.a>
             ))}
-          </div>
-          <Link href='/Free-audit'>
-            <button className="px-3 py-2 text-sm rounded-full font-bold text-black bg-white/80 hover:bg-white/60 transition duration-300 ease-in-out shadow-lg whitespace-nowrap">
-             Free Audit
-            </button>
-          </Link>
+            <motion.div variants={liVariants}>
+              <Link href='/Free-audit'>
+                <button className="px-3 py-2 text-sm rounded-full font-bold text-black bg-white/80 hover:bg-white/60 transition duration-300 ease-in-out shadow-lg whitespace-nowrap">
+                  Free Audit
+                </button>
+              </Link>
+            </motion.div>
+          </motion.div>
         </div>
 
       </div>
@@ -138,7 +190,6 @@ function HeaderComponent({ activeItem, setActiveItem }) {
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div className="md:hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-40 flex items-center justify-center">
-          {/* Close button for mobile menu */}
           <button
             onClick={closeMobileMenu}
             className="absolute top-6 right-6 text-gray-300 text-4xl p-2 rounded-full hover:bg-white/10 transition-colors duration-200"
@@ -147,9 +198,14 @@ function HeaderComponent({ activeItem, setActiveItem }) {
             <FaTimes />
           </button>
 
-          <ul className="flex flex-col space-y-8 text-center text-white text-3xl font-bold capitalize">
+          <motion.ul
+            className="flex flex-col space-y-8 text-center text-white text-3xl font-bold capitalize"
+            variants={ulVariants}
+            initial="hidden"
+            animate="visible"
+          >
             {navItems.map((item) => (
-              <li key={item}>
+              <motion.li key={item} variants={liVariants}>
                 <button
                   onClick={() => handleNavItemClick(item)}
                   className={`${plusJakarta.className} block py-2 w-full ${
@@ -158,38 +214,12 @@ function HeaderComponent({ activeItem, setActiveItem }) {
                 >
                   {item}
                 </button>
-              </li>
+              </motion.li>
             ))}
-
-            {/* Socials (Mobile) */}
-            <div className="flex justify-center space-x-6 mt-8">
-              {socials.map(({ name, link, icon: Icon }) => (
-                <a
-                  key={name}
-                  href={link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-white hover:text-[#b0b0b0] text-4xl"
-                >
-                  <Icon />
-                </a>
-              ))}
-              
-            </div>
-                <Link href='/Free-audit'>
-            <button className=" px-12 py-4 mt-4 text-sm rounded-full font-bold text-black bg-white/80 hover:bg-white/60 transition duration-300 ease-in-out shadow-lg whitespace-nowrap">
-             Free Audit
-            </button>
-          </Link>
-          </ul>
-          
-
+          </motion.ul>
         </div>
       )}
-
-
-      
-    </div>
+    </motion.div>
   );
 }
 

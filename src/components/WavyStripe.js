@@ -1,8 +1,11 @@
-
 "use client";
 import { Canvas, useFrame, invalidate } from "@react-three/fiber";
 import { useRef, useMemo, memo } from "react";
-import { CatmullRomCurve3, Color, Vector3, InstancedMesh, Matrix4 } from "three";
+import {
+  CatmullRomCurve3,
+  Color,
+  Vector3
+} from "three";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { AdaptiveDpr } from "@react-three/drei";
 
@@ -55,7 +58,7 @@ function WavyTube({ color, radius, speed, waveOffset, quality }) {
   );
 }
 
-function WavyStripeComponent({ quality }) {
+function WavyStripeComponent({ quality, noPointer = false }) {
   const layerColors = useMemo(
     () => [
       "#ffffff",
@@ -82,7 +85,7 @@ function WavyStripeComponent({ quality }) {
   const tubes = useMemo(
     () =>
       layerColors.map((color, i) => (
-        <group key={i} position={[0, -2.2 + i * ySpacing, 0]}>
+        <group key={i} position={[0, -2.6 + i * ySpacing, 0]}>
           <WavyTube
             quality={quality}
             color={new Color(color)}
@@ -99,13 +102,14 @@ function WavyStripeComponent({ quality }) {
 
   return (
     <Canvas
+      style={noPointer ? { pointerEvents: "none" } : undefined}
       camera={{ position: [0, 0, 6], fov: 70 }}
       gl={{ alpha: true, powerPreference: "high-performance" }}
       dpr={isMobile ? [1, 1] : [1, 1.25]}
       frameloop="demand"
     >
       <AdaptiveDpr pixelated />
-      <ambientLight intensity={1.2} />
+      <ambientLight intensity={1.3} />
       <directionalLight position={[10, 10, 5]} intensity={1.6} />
 
       {tubes}
@@ -113,7 +117,7 @@ function WavyStripeComponent({ quality }) {
       {!isMobile && (
         <EffectComposer>
           <Bloom
-            intensity={1.8}
+            intensity={0.7}
             luminanceThreshold={0.1}
             luminanceSmoothing={0.05}
             mipmapBlur
