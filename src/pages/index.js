@@ -1,6 +1,7 @@
 import Head from "next/head";
 import dynamic from "next/dynamic";
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { motion } from "framer-motion";
 import Layout from "../components/layouts/Layout";
@@ -20,11 +21,22 @@ const fascinate = Fascinate({
   display: "swap",
 });
 
+
+
 // sections (lazy)
-const Vision = dynamic(() => import("../components/sections/Vision"));
-const Pricing = dynamic(() => import("../components/sections/Pricing"));
-const AboutUs = dynamic(() => import("../components/sections/AboutUs"));
-const Portfolio = dynamic(() => import("../components/sections/Portfolio"));
+const Vision = dynamic(() => import("../components/sections/Vision"), {
+  loading: () => <div className="h-40 w-full" />, // lightweight fallback
+});
+const Pricing = dynamic(() => import("../components/sections/Pricing"), {
+  loading: () => <div className="h-40 w-full" />,
+});
+const AboutUs = dynamic(() => import("../components/sections/AboutUs"), {
+  loading: () => <div className="h-40 w-full" />,
+});
+const Portfolio = dynamic(() => import("../components/sections/Portfolio"), {
+  loading: () => <div className="h-40 w-full" />,
+});
+
 const Impact = dynamic(() => import("../components/Impact/Impact"), {
   ssr: false,
 });
@@ -80,6 +92,19 @@ export default function Home() {
   const [activeItem, setActiveItem] = useState("Home");
   const [mount3D, setMount3D] = useState(false);
 
+  const searchParams = useSearchParams();
+  const section = searchParams.get("section"); 
+  const hasSection = !!section;
+
+
+  // ✅ Sync activeItem with URL
+  useEffect(() => {
+    if (section) {
+      setActiveItem(section);
+    } else {
+      setActiveItem("Home");
+    }
+  }, [section]);
   useEffect(() => {
     if (typeof window === "undefined") return;
     const mqSmall = window.matchMedia("(max-width: 768px)");
@@ -87,11 +112,10 @@ export default function Home() {
     return () => clearTimeout(t);
   }, []);
 
+  // ✅ scroll only once (not every section change)
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  }, [activeItem]);
+    window.scrollTo(0, 0);
+  }, []);
 
   const renderSectionContent = () => {
     switch (activeItem) {
@@ -109,7 +133,7 @@ export default function Home() {
   };
 
   return (
-    <Layout>
+    <Layout activeItem={activeItem} setActiveItem={setActiveItem}>
       <Head>
         <title>Exerra AI</title>
       </Head>
@@ -117,7 +141,7 @@ export default function Home() {
       <main className="flex flex-col min-h-screen w-full bg-[#050607] overflow-x-hidden">
         <Header activeItem={activeItem} setActiveItem={setActiveItem} />
 
-        {activeItem === "Home" ? (
+          {activeItem === "Home" && !hasSection ? (
           <>
             {/* === Hero Section === */}
             <section
